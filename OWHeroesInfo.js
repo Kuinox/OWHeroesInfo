@@ -30,7 +30,7 @@ var req_process = function (req, res) {
         console.log("Error : " + e.message);
         //req_erreur(req, res, query);
     }
-}
+};
 
 var server = http.createServer(req_process);
 var port = 5000;

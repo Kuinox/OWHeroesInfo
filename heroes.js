@@ -2,38 +2,12 @@
 
 var fs = require("fs");
 var url = require("url");
-var https = require("https");
+var owApiCall = require("./lib/owApiCall.js");
+var sendPage = require("./lib/sendPage.js");
 var index = require("./index.js");
 
-function sendPage(page, res) {
-    res.writeHead(200, {"Content-Type": "text/html; charset=utf-8'"});
-    res.write(page);
-    res.end();
-}
 
-function api_call(resp) { //http://overwatch-api.net/api/v1
-    var buffer = "";
-    var options = {
-        host: "overwatch-api.net",
-        port: 443,
-        path: "/api/v1/hero",
-        method: "GET",
-        headers: {
-            "User-Agent": "node",
-            "Accept" : "application/json"
-        },
-        json: true
-    };
-    https.request(options, function(res) {
-        res.setEncoding("utf8");
-        res.on("data", function (chunk) {
-            buffer += chunk;
-        });
-        res.on("end", function(){
-            sendPage(buffer, resp);
-        });
-    }).end();
-}
+
 
 function process(req, res, query) {
     var template;
@@ -41,7 +15,9 @@ function process(req, res, query) {
     var pathname = request.pathname;
     var exploded_url = pathname.split("/");
     if (exploded_url.length>2) {
-        api_call(res);
+        var data = owApiCall();
+        sendPage("fetched", res);
+        console.log(data);
     } else {
         template = fs.readFileSync("template/index.html", "utf-8");
         index(res);
